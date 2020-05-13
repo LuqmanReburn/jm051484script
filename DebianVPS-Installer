@@ -1,21 +1,21 @@
 #!/bin/bash
 # Debian 9 and 10 VPS Installer
 # Original Script by Bonveio Abitona
-# Modified By jm051484
+# Modified By A.Dev
 #
 # Variables (Can be changed depends on your preferred values)
 
 # Script name
-MyScriptName='jm051484'
+MyScriptName='A.Dev'
 
 # OpenSSH Ports
 SSH_Port1='22'
 
 # Your SSH Banner
-SSH_Banner='https://pastebin.com/raw/1mhG2jhw'
+SSH_Banner='https://pastebin.com/raw/5yn9HHgE'
 
 # Dropbear Ports
-Dropbear_Port1='143'
+Dropbear_Port1='442'
 Dropbear_Port2='3128'
 
 # Stunnel Ports
@@ -23,7 +23,7 @@ Stunnel_Port1='442' # through Dropbear
 Stunnel_Port2='441' # through OpenSSH
 
 # OpenVPN Ports
-OpenVPN_TCP_Port='440' # take note when you change this port, openvpn sun noload config will not work
+OpenVPN_TCP_Port='443' # take note when you change this port, openvpn sun noload config will not work
 OpenVPN_UDP_Port='1194'
 
 # Privoxy Ports
@@ -36,7 +36,7 @@ Squid_Port1='8080'
 OvpnDownload_Port='86' # Before changing this value, please read this document. It contains all unsafe ports for Google Chrome Browser, please read from line #23 to line #89: https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc
 
 # Server local time
-MyVPS_Time='Asia/Manila'
+MyVPS_Time='Asia/Kuala Lumpur'
 
 ## All function used for this script
 #############################
@@ -233,14 +233,14 @@ function InsOpenVPN(){
  # Creating server.conf, ca.crt, server.crt and server.key
 cp -r /usr/share/easy-rsa/ /etc/openvpn
 mkdir /etc/openvpn/easy-rsa/keys
-sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="PH"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Camarines"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Camarines"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="Personal"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="jm051484@gmail.com"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_OU="MyOrganizationalUnit"|export KEY_OU="Personal"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_NAME="EasyRSA"|export KEY_NAME="jm051484"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_OU=changeme|export KEY_OU=jm051484|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="MY"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Hulu Langat"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Hulu Langat"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="HL"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="rusmiatiishak@gmail.com"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_OU="MyOrganizationalUnit"|export KEY_OU="A.Dev"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_NAME="EasyRSA"|export KEY_NAME="A.Dev"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_OU=changeme|export KEY_OU=A.Dev|' /etc/openvpn/easy-rsa/vars
 
 # Create Diffie-Helman Pem
 openssl dhparam -out /etc/openvpn/dh.pem 1024
@@ -277,7 +277,6 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/server.crt
 key /etc/openvpn/server.key
 dh /etc/openvpn/dh.pem
-duplicate-cn
 cipher none
 ncp-disable
 auth none
@@ -319,7 +318,6 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/server.crt
 key /etc/openvpn/server.key
 dh /etc/openvpn/dh.pem
-duplicate-cn
 cipher none
 ncp-disable
 auth none
@@ -522,7 +520,7 @@ myNginxC
  mkdir -p /var/www/openvpn
 
  # Now creating all of our OpenVPN Configs 
-cat <<EOF15> /var/www/openvpn/GTMConfig.ovpn
+cat <<EOF15> /var/www/openvpn/DiGi.ovpn
 client
 dev tun
 proto tcp
@@ -555,7 +553,7 @@ $(cat /etc/openvpn/ca.crt)
 </ca>
 EOF15
 
-cat <<EOF16> /var/www/openvpn/SunConfig.ovpn
+cat <<EOF16> /var/www/openvpn/UMobile.ovpn
 client
 dev tun
 proto tcp
@@ -659,7 +657,7 @@ cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Simple OVPN Download site by jm051484 -->
+<!-- Simple OVPN Download site by A.Dev -->
 
 <head><meta charset="utf-8" /><title>MyScriptName OVPN Config Download</title><meta name="description" content="MyScriptName Server" /><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" /><meta name="theme-color" content="#000000" /><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet"></head><body><div class="container justify-content-center" style="margin-top:9em;margin-bottom:5em;"><div class="col-md"><div class="view"><img src="https://openvpn.net/wp-content/uploads/openvpn.jpg" class="card-img-top"><div class="mask rgba-white-slight"></div></div><div class="card"><div class="card-body"><h5 class="card-title">Config List</h5><br /><ul class="list-group"><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Globe/TM <span class="badge light-blue darken-4">Android/iOS</span><br /><small> For EZ/GS Promo with WNP,SNS,FB and IG freebies</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/GTMConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Globe/TM <span class="badge light-blue darken-4">PC/Modem</span><br /><small> For EZ/GS Promo with WNP,SNS,FB and IG freebies</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/GTM-PC-Config.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Sun <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For TU Promos</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SunConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Sun <span class="badge light-blue darken-4">Modem</span><br /><small> Without Promo/Noload</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SunNoloadConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li></ul></div></div></div></div></body></html>
 mySiteOvpn
@@ -780,7 +778,7 @@ function ScriptMessage(){
  echo -e " Open release version"
  echo -e ""
  echo -e " Original Script created by Bonveio"
- echo -e " Modified by jm051484"
+ echo -e " Modified by A.Dev"
  echo -e ""
 }
 
