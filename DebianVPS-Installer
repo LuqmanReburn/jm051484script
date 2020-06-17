@@ -1,29 +1,28 @@
 #!/bin/bash
 # Debian 9 and 10 VPS Installer
 # Original Script by Bonveio Abitona
-# Modified By jm051484
+# Modified By A.Dev
 #
 # Variables (Can be changed depends on your preferred values)
 
 # Script name
-MyScriptName='jm051484'
+MyScriptName='A.Dev'
 
 # OpenSSH Ports
 SSH_Port1='22'
 
 # Your SSH Banner
-SSH_Banner='https://pastebin.com/raw/1mhG2jhw'
+SSH_Banner='https://pastebin.com/raw/fgYP4HKN'
 
 # Dropbear Ports
 Dropbear_Port1='143'
-Dropbear_Port2='3128'
 
 # Stunnel Ports
 Stunnel_Port1='442' # through Dropbear
 Stunnel_Port2='441' # through OpenSSH
 
 # OpenVPN Ports
-OpenVPN_TCP_Port='440' # take note when you change this port, openvpn sun noload config will not work
+OpenVPN_TCP_Port='502' # take note when you change this port, openvpn sun noload config will not work
 OpenVPN_UDP_Port='1194'
 
 # Privoxy Ports
@@ -31,17 +30,19 @@ Privoxy_Port1='8000'
 
 # Squid Ports
 Squid_Port1='8080'
+Squid_Port2='8888'
+Squid_Port3='3128'
 
 # OpenVPN Config Download Port
-OvpnDownload_Port='86' # Before changing this value, please read this document. It contains all unsafe ports for Google Chrome Browser, please read from line #23 to line #89: https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc
+OvpnDownload_Port='85' # Before changing this value, please read this document. It contains all unsafe ports for Google Chrome Browser, please read from line #23 to line #89: https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc
 
 # Server local time
-MyVPS_Time='Asia/Manila'
+MyVPS_Time='Asia/KualaLumpur'
 
 ## All function used for this script
 #############################
 ## WARNING: Do not modify or edit anything
-## if you did'nt know what to do.
+## if you didn't know what to do.
 ## This part is too sensitive.
 
 function InstUpdates(){
@@ -156,7 +157,7 @@ MySSHConfig
 # My Dropbear Config
 NO_START=0
 DROPBEAR_PORT=PORT01
-DROPBEAR_EXTRA_ARGS="-p PORT02"
+DROPBEAR_EXTRA_ARGS=""
 DROPBEAR_BANNER="/etc/banner"
 DROPBEAR_RSAKEY="/etc/dropbear/dropbear_rsa_host_key"
 DROPBEAR_DSSKEY="/etc/dropbear/dropbear_dss_host_key"
@@ -166,7 +167,6 @@ MyDropbear
 
  # Now changing our desired dropbear ports
  sed -i "s|PORT01|$Dropbear_Port1|g" /etc/default/dropbear
- sed -i "s|PORT02|$Dropbear_Port2|g" /etc/default/dropbear
  
  # Restarting dropbear service
  systemctl restart dropbear
@@ -278,8 +278,7 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/server.crt
 key /etc/openvpn/server.key
 dh /etc/openvpn/dh.pem
-duplicate-cn
-cipher none
+cipher AES-128-CBC
 ncp-disable
 auth none
 comp-lzo
@@ -295,7 +294,6 @@ sndbuf 393216
 rcvbuf 393216
 push "sndbuf 393216"
 push "rcvbuf 393216"
-push "redirect-gateway def1"
 push "route-method exe"
 push "route-delay 2"
 client-to-client
@@ -320,8 +318,7 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/server.crt
 key /etc/openvpn/server.key
 dh /etc/openvpn/dh.pem
-duplicate-cn
-cipher none
+cipher AES-128-CBC
 ncp-disable
 auth none
 comp-lzo
@@ -337,7 +334,6 @@ sndbuf 393216
 rcvbuf 393216
 push "sndbuf 393216"
 push "rcvbuf 393216"
-push "redirect-gateway def1"
 push "route-method exe"
 push "route-delay 2"
 client-to-client
@@ -351,8 +347,6 @@ verb 3
 script-security 2
 socket-flags TCP_NODELAY
 push "socket-flags TCP_NODELAY"
-push "dhcp-option DNS 8.8.8.8"
-push "dhcp-option DNS 8.8.4.4"
 myOpenVPNconf2
 
  # Getting all dns inside resolv.conf then use as Default DNS for our openvpn server
@@ -478,13 +472,14 @@ acl VPN dst IP-ADDRESS/32
 http_access allow VPN
 http_access deny all 
 http_port Squid_Port1
+http_port Squid_Port2
+http_port Squid_Port3
 coredump_dir /var/spool/squid
-dns_nameservers 8.8.8.8 8.8.4.4
 refresh_pattern ^ftp: 1440 20% 10080
 refresh_pattern ^gopher: 1440 0% 1440
 refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
 refresh_pattern . 0 20% 4320
-visible_hostname MyScriptName
+visible_hostname A.Dev
 mySquid
 
 # Setting machine's IP Address inside of our squid config(security that only allows this machine to use this proxy server)
@@ -492,6 +487,8 @@ mySquid
  
  # Setting squid ports
  sed -i "s|Squid_Port1|$Squid_Port1|g" /etc/squid/squid.conf
+ sed -i "s|Squid_Port2|$Squid_Port2|g" /etc/squid/squid.conf
+ sed -i "s|Squid_Port3|$Squid_Port3|g" /etc/squid/squid.conf
  sed -i "s|MyScriptName|$MyScriptName|g" /etc/squid/squid.conf
 
  # Starting Proxy server
@@ -753,7 +750,7 @@ function ScriptMessage(){
  echo -e " Open release version"
  echo -e ""
  echo -e " Original Script created by Bonveio"
- echo -e " Modified by jm051484"
+ echo -e " Modified by A.Dev"
  echo -e ""
 }
 #############################
@@ -761,7 +758,7 @@ function ScriptMessage(){
 ## Installation Process
 #############################
 ## WARNING: Do not modify or edit anything
-## if you did'nt know what to do.
+## if you didn't know what to do.
 ## This part is too sensitive.
 #############################
 #############################
