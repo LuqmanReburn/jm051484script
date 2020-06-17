@@ -1,21 +1,21 @@
 #!/bin/bash
 # Debian 9 and 10 VPS Installer
 # Original Script by Bonveio Abitona
-# Modified By A.Dev
+# Modified By jm051484
 #
 # Variables (Can be changed depends on your preferred values)
 
 # Script name
-MyScriptName='A.Dev'
+MyScriptName='jm051484'
 
 # OpenSSH Ports
 SSH_Port1='22'
 
 # Your SSH Banner
-SSH_Banner='https://pastebin.com/raw/5yn9HHgE'
+SSH_Banner='https://pastebin.com/raw/1mhG2jhw'
 
 # Dropbear Ports
-Dropbear_Port1='442'
+Dropbear_Port1='143'
 Dropbear_Port2='3128'
 
 # Stunnel Ports
@@ -23,7 +23,7 @@ Stunnel_Port1='442' # through Dropbear
 Stunnel_Port2='441' # through OpenSSH
 
 # OpenVPN Ports
-OpenVPN_TCP_Port='443' # take note when you change this port, openvpn sun noload config will not work
+OpenVPN_TCP_Port='440' # take note when you change this port, openvpn sun noload config will not work
 OpenVPN_UDP_Port='1194'
 
 # Privoxy Ports
@@ -36,7 +36,7 @@ Squid_Port1='8080'
 OvpnDownload_Port='86' # Before changing this value, please read this document. It contains all unsafe ports for Google Chrome Browser, please read from line #23 to line #89: https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc
 
 # Server local time
-MyVPS_Time='Asia/Kuala Lumpur'
+MyVPS_Time='Asia/Manila'
 
 ## All function used for this script
 #############################
@@ -64,6 +64,9 @@ function InstUpdates(){
  
  # Installing a text colorizer
  gem install lolcat
+ 
+ # install fail2ban
+ apt-get -y install fail2ban
 
  # Trying to remove obsolette packages after installation
  apt-get autoremove -y
@@ -200,11 +203,9 @@ client = no
 socket = l:TCP_NODELAY=1
 socket = r:TCP_NODELAY=1
 TIMEOUTclose = 0
-
 [dropbear]
 accept = Stunnel_Port1
 connect = 127.0.0.1:dropbear_port_c
-
 [openssh]
 accept = Stunnel_Port2
 connect = 127.0.0.1:openssh_port_c
@@ -233,14 +234,14 @@ function InsOpenVPN(){
  # Creating server.conf, ca.crt, server.crt and server.key
 cp -r /usr/share/easy-rsa/ /etc/openvpn
 mkdir /etc/openvpn/easy-rsa/keys
-sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="MY"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Hulu Langat"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Hulu Langat"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="HL"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="rusmiatiishak@gmail.com"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_OU="MyOrganizationalUnit"|export KEY_OU="A.Dev"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_NAME="EasyRSA"|export KEY_NAME="A.Dev"|' /etc/openvpn/easy-rsa/vars
-sed -i 's|export KEY_OU=changeme|export KEY_OU=A.Dev|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="PH"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Camarines"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Camarines"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="Personal"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="jm051484@gmail.com"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_OU="MyOrganizationalUnit"|export KEY_OU="Personal"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_NAME="EasyRSA"|export KEY_NAME="jm051484"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_OU=changeme|export KEY_OU=jm051484|' /etc/openvpn/easy-rsa/vars
 
 # Create Diffie-Helman Pem
 openssl dhparam -out /etc/openvpn/dh.pem 1024
@@ -277,6 +278,7 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/server.crt
 key /etc/openvpn/server.key
 dh /etc/openvpn/dh.pem
+duplicate-cn
 cipher none
 ncp-disable
 auth none
@@ -318,6 +320,7 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/server.crt
 key /etc/openvpn/server.key
 dh /etc/openvpn/dh.pem
+duplicate-cn
 cipher none
 ncp-disable
 auth none
@@ -358,7 +361,7 @@ myOpenVPNconf2
 done
 
  # Creating a New update message in server.conf
- cat <<'NUovpn' > /etc/openvpn/server.conf
+ # cat <<'NUovpn' > /etc/openvpn/server.conf
  # New Update are now released, OpenVPN Server
  # are now running both TCP and UDP Protocol. (Both are only running on IPv4)
  # But our native server.conf are now removed and divided
@@ -378,14 +381,14 @@ done
  # executed/raised from this script (OpenVPN_TCP_Port/OpenVPN_UDP_Port)
  #
  # Enjoy the new update
- NUovpn
+ # NUovpn
 
  # setting openvpn server port
  sed -i "s|MyOvpnPort|$OpenVPN_TCP_Port|g" /etc/openvpn/server_tcp.conf
  sed -i "s|MyOvpnPort|$OpenVPN_UDP_Port|g" /etc/openvpn/server_udp.conf 
  
  # Getting some OpenVPN plugins for unix authentication
- wget -qO /etc/openvpn/b.zip 'https://raw.githubusercontent.com/jm051484/deb9-10vpsinst./master/openvpn_plugin64'
+ wget -qO /etc/openvpn/b.zip 'https://raw.githubusercontent.com/jm051484/jm051484script/master/openvpn_plugin64'
  unzip -qq /etc/openvpn/b.zip -d /etc/openvpn
  rm -f /etc/openvpn/b.zip
  
@@ -425,7 +428,7 @@ EOFipt
  systemctl enable openvpn@server_udp
  
  # Pulling OpenVPN no internet fixer script
- wget -qO /etc/openvpn/openvpn.bash "https://raw.githubusercontent.com/jm051484/deb9-10vpsinst./master/openvpn.bash"
+ wget -qO /etc/openvpn/openvpn.bash "https://raw.githubusercontent.com/jm051484/jm051484script/master/openvpn.bash"
  chmod +x /etc/openvpn/openvpn.bash
 }
 
@@ -520,7 +523,7 @@ myNginxC
  mkdir -p /var/www/openvpn
 
  # Now creating all of our OpenVPN Configs 
-cat <<EOF15> /var/www/openvpn/DiGi.ovpn
+cat <<EOF15> /var/www/openvpn/GTMConfig.ovpn
 client
 dev tun
 proto tcp
@@ -547,13 +550,11 @@ http-proxy $IPADDR $Privoxy_Port1
 http-proxy-option VERSION 1.1
 http-proxy-option CUSTOM-HEADER Host www.googleapis.com
 http-proxy-option CUSTOM-HEADER X-Forwarded-For www.googleapis.com
-
 <ca>
 $(cat /etc/openvpn/ca.crt)
 </ca>
 EOF15
-
-cat <<EOF16> /var/www/openvpn/UMobile.ovpn
+cat <<EOF16> /var/www/openvpn/SunConfig.ovpn
 client
 dev tun
 proto tcp
@@ -580,12 +581,10 @@ http-proxy $IPADDR $Privoxy_Port1
 http-proxy-option CUSTOM-HEADER Host www.viber.com.edgekey.net
 http-proxy-option CUSTOM-HEADER X-Online-Host www.viber.com.edgekey.net
 http-proxy-option CUSTOM-HEADER X-Forwarded-For www.viber.com.edgekey.net
-
 <ca>
 $(cat /etc/openvpn/ca.crt)
 </ca>
 EOF16
-
 cat <<EOF162> /var/www/openvpn/SunUDPConfig.ovpn
 client
 dev tun
@@ -610,12 +609,10 @@ comp-lzo
 setenv CLIENT_CERT 0
 reneg-sec 0
 verb 3
-
 <ca>
 $(cat /etc/openvpn/ca.crt)
 </ca>
 EOF162
-
 cat <<EOF17> /var/www/openvpn/SunNoloadConfig.ovpn
 client
 dev tun
@@ -646,19 +643,15 @@ reneg-sec 0
 verb 0
 nice -20
 log /dev/null
-
 <ca>
 $(cat /etc/openvpn/ca.crt)
 </ca>
 EOF17
-
  # Creating OVPN download site index.html
 cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 <!DOCTYPE html>
 <html lang="en">
-
-<!-- Simple OVPN Download site by A.Dev -->
-
+<!-- Simple OVPN Download site by jm051484 -->
 <head><meta charset="utf-8" /><title>MyScriptName OVPN Config Download</title><meta name="description" content="MyScriptName Server" /><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" /><meta name="theme-color" content="#000000" /><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet"></head><body><div class="container justify-content-center" style="margin-top:9em;margin-bottom:5em;"><div class="col-md"><div class="view"><img src="https://openvpn.net/wp-content/uploads/openvpn.jpg" class="card-img-top"><div class="mask rgba-white-slight"></div></div><div class="card"><div class="card-body"><h5 class="card-title">Config List</h5><br /><ul class="list-group"><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Globe/TM <span class="badge light-blue darken-4">Android/iOS</span><br /><small> For EZ/GS Promo with WNP,SNS,FB and IG freebies</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/GTMConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Globe/TM <span class="badge light-blue darken-4">PC/Modem</span><br /><small> For EZ/GS Promo with WNP,SNS,FB and IG freebies</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/GTM-PC-Config.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Sun <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For TU Promos</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SunConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Sun <span class="badge light-blue darken-4">Modem</span><br /><small> Without Promo/Noload</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SunNoloadConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li></ul></div></div></div></div></body></html>
 mySiteOvpn
  
@@ -666,7 +659,6 @@ mySiteOvpn
  sed -i "s|MyScriptName|$MyScriptName|g" /var/www/openvpn/index.html
  sed -i "s|NGINXPORT|$OvpnDownload_Port|g" /var/www/openvpn/index.html
  sed -i "s|IP-ADDRESS|$IPADDR|g" /var/www/openvpn/index.html
-
  # Restarting nginx service
  systemctl restart nginx
  
@@ -675,7 +667,6 @@ mySiteOvpn
  zip -qq -r Configs.zip *.ovpn
  cd
 }
-
 function ip_address(){
   local IP="$( ip addr | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | egrep -v "^192\.168|^172\.1[6-9]\.|^172\.2[0-9]\.|^172\.3[0-2]\.|^10\.|^127\.|^255\.|^0\." | head -n 1 )"
   [ -z "${IP}" ] && IP="$( wget -qO- -t1 -T2 ipv4.icanhazip.com )"
@@ -683,12 +674,10 @@ function ip_address(){
   [ ! -z "${IP}" ] && echo "${IP}" || echo
 } 
 IPADDR="$(ip_address)"
-
 function ConfStartup(){
  # Daily reboot time of our machine
  # For cron commands, visit https://crontab.guru
  echo -e "0 4\t* * *\troot\treboot" > /etc/cron.d/b_reboot_job
-
  # Creating directory for startup script
  rm -rf /etc/jm051484
  mkdir -p /etc/jm051484
@@ -699,16 +688,12 @@ function ConfStartup(){
 #!/bin/bash
 # Setting server local time
 ln -fs /usr/share/zoneinfo/MyVPS_Time /etc/localtime
-
 # Prevent DOS-like UI when installing using APT (Disabling APT interactive dialog)
 export DEBIAN_FRONTEND=noninteractive
-
 # Allowing ALL TCP ports for our machine (Simple workaround for policy-based VPS)
 iptables -A INPUT -s $(wget -4qO- http://ipinfo.io/ip) -p tcp -m multiport --dport 1:65535 -j ACCEPT
-
 # Allowing OpenVPN to Forward traffic
 /bin/bash /etc/openvpn/openvpn.bash
-
 # Deleting Expired SSH Accounts
 /usr/local/sbin/delete_expired &> /dev/null
 EOFSH
@@ -716,28 +701,23 @@ EOFSH
  
  # Setting server local time every time this machine reboots
  sed -i "s|MyVPS_Time|$MyVPS_Time|g" /etc/jm051484/startup.sh
-
  # 
  rm -rf /etc/sysctl.d/99*
-
  # Setting our startup script to run every machine boots 
  echo "[Unit]
 Description=jm051484 Startup Script
 Before=network-online.target
 Wants=network-online.target
-
 [Service]
 Type=oneshot
 ExecStart=/bin/bash /etc/jm051484/startup.sh
 RemainAfterExit=yes
-
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/jm051484.service
  chmod +x /etc/systemd/system/jm051484.service
  systemctl daemon-reload
  systemctl start jm051484
  systemctl enable jm051484 &> /dev/null
-
 # install ddos deflate
 cd
 apt-get -y install dnsutils dsniff
@@ -746,19 +726,16 @@ unzip ddos-deflate-master.zip
 cd ddos-deflate-master
 ./install.sh
 rm -rf /root/ddos-deflate-master.zip
-
  # Rebooting cron service
  systemctl restart cron
  systemctl enable cron
  
 }
-
 function ConfMenu(){
 echo -e " Creating Menu scripts.."
-
 cd /usr/local/sbin/
 rm -rf {accounts,base-ports,base-ports-wc,base-script,bench-network,clearcache,connections,create,create_random,create_trial,delete_expired,diagnose,edit_dropbear,edit_openssh,edit_openvpn,edit_ports,edit_squid3,edit_stunnel4,locked_list,menu,options,ram,reboot_sys,reboot_sys_auto,restart_services,server,set_multilogin_autokill,set_multilogin_autokill_lib,show_ports,speedtest,user_delete,user_details,user_details_lib,user_extend,user_list,user_lock,user_unlock}
-wget -q 'https://raw.githubusercontent.com/jm051484/deb9-10vpsinst./master/menu.zip'
+wget -q 'https://raw.githubusercontent.com/jm051484/jm051484script/master/menu.zip'
 unzip -qq menu.zip
 rm -f menu.zip
 chmod +x ./*
@@ -766,22 +743,19 @@ dos2unix ./* &> /dev/null
 sed -i 's|/etc/squid/squid.conf|/etc/privoxy/config|g' ./*
 sed -i 's|http_port|listen-address|g' ./*
 cd ~
-
 echo 'clear' > /etc/profile.d/jm051484.sh
 echo 'echo '' > /var/log/syslog' >> /etc/profile.d/jm051484.sh
 echo 'screenfetch -p -A Android' >> /etc/profile.d/jm051484.sh
 chmod +x /etc/profile.d/jm051484.sh
 }
-
 function ScriptMessage(){
  echo -e " (｡◕‿◕｡) $MyScriptName Debian VPS Installer"
  echo -e " Open release version"
  echo -e ""
  echo -e " Original Script created by Bonveio"
- echo -e " Modified by A.Dev"
+ echo -e " Modified by jm051484"
  echo -e ""
 }
-
 #############################
 #############################
 ## Installation Process
@@ -791,7 +765,6 @@ function ScriptMessage(){
 ## This part is too sensitive.
 #############################
 #############################
-
  # First thing to do is check if this machine is Debian
  source /etc/os-release
 if [[ "$ID" != 'debian' ]]; then
@@ -799,7 +772,6 @@ if [[ "$ID" != 'debian' ]]; then
  echo -e "[\e[1;31mError\e[0m] This script is for Debian only, exting..." 
  exit 1
 fi
-
  # Now check if our machine is in root user, if not, this script exits
  # If you're on sudo user, run `sudo su -` first before running this script
  if [[ $EUID -ne 0 ]];then
@@ -807,14 +779,12 @@ fi
  echo -e "[\e[1;31mError\e[0m] This script must be run as root, exiting..."
  exit 1
 fi
-
  # (For OpenVPN) Checking it this machine have TUN Module, this is the tunneling interface of OpenVPN server
  if [[ ! -e /dev/net/tun ]]; then
  echo -e "[\e[1;31m×\e[0m] You cant use this script without TUN Module installed/embedded in your machine, file a support ticket to your machine admin about this matter"
  echo -e "[\e[1;31m-\e[0m] Script is now exiting..."
  exit 1
 fi
-
  # Begin Installation by Updating and Upgrading machine and then Installing all our wanted packages/services to be install.
  ScriptMessage
  sleep 2
@@ -842,12 +812,10 @@ fi
  
  # Configuring Nginx OVPN config download site
  OvpnConfigs
-
  # Some assistance and startup scripts
  ConfStartup
-
  ## DNS maker plugin for SUN users(for vps script usage only)
- wget -qO dnsmaker "https://raw.githubusercontent.com/jm051484/deb9-10vpsinst./master/DNSMaster/debian"
+ wget -qO dnsmaker "https://raw.githubusercontent.com/jm051484/jm051484script/master/DNSMaster/debian"
  chmod +x dnsmaker
  ./dnsmaker
  rm -rf dnsmaker
@@ -857,7 +825,6 @@ fi
  mv /tmp/abonv_mydns /etc/jm051484/my_domain_name
  mv /tmp/abonv_mydns_id /etc/jm051484/my_domain_id
  rm -rf /tmp/abonv*
-
  # VPS Menu script v1.0
  ConfMenu
  
@@ -866,7 +833,6 @@ fi
  
  clear
  cd ~
-
  # Running sysinfo 
  bash /etc/profile.d/jm051484.sh
  
@@ -905,6 +871,5 @@ fi
  
  # Clearing all logs from installation
  rm -rf /root/.bash_history && history -c && echo '' > /var/log/syslog
-
 rm -f DebianVPS-Installer*
 exit 1
